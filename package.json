@@ -1,0 +1,36 @@
+{
+  "name": "electron-vlog",
+  "version": "1.0.0",
+  "description": "Zero effort way to take screenshots, video recordings and time-lapses of your Electron app",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CatalanCabbage/electron-vlog.git"
+  },
+  "keywords": [
+    "electron",
+    "screenshot",
+    "capture",
+    "video",
+    "recording",
+    "screencapture",
+    "lapse"
+  ],
+  "author": "Catalan Cabbage",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CatalanCabbage/electron-vlog/issues"
+  },
+  "homepage": "https://github.com/CatalanCabbage/electron-vlog#readme",
+  "devDependencies": {
+    "electron": "^9.0.5",
+    "electron-reload": "^1.5.0",
+    "eslint": "^7.4.0"
+  },
+  "dependencies": {
+    "recordrtc": "^5.6.1"
+  }
+}
