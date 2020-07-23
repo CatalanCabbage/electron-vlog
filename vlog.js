@@ -73,7 +73,6 @@ var mediaRecorder;
 async function initRecording() {
     var title = document.title;
     var sources = await desktopCapturer.getSources({types: ['window', 'screen']});
-    //Get stream
     sources.forEach(async (src) => {
         if (src.name == title) {
             navigator.webkitGetUserMedia({
