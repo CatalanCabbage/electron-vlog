@@ -162,7 +162,7 @@ async function captureVisibleArea(options) {
     options.fileNamePrefix = 'visible';
     if(options.mode == 'timelapse') {
         //Save this image
-        //Compare with previous. If previous is empty, save this.
+        //Compare with previous; if previous is empty, save this.
         if(isImageDifferent()) {
             saveScreenshot(img.toJPEG(100), options);
         } else {
