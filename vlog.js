@@ -35,10 +35,10 @@ document.onreadystatechange = () => {
                 };
                 imageUtils.toggleTimelapse(options);
             }
-
         };
 
         initRecording();
+        setTimeout(captureTestVideo, 1000);
     }
 };
 
@@ -47,11 +47,16 @@ document.onreadystatechange = () => {
 function setCurrentTime() {
     var timeElem = document.getElementById('time');
     var d = new Date();
-    var dateStr = d.getHours() + ':' +d.getMinutes() + ':' + d.getSeconds();
+    var dateStr = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ':' + d.getMilliseconds();
     timeElem.innerHTML = dateStr;
     setTimeout(setCurrentTime, 1000);
 }
 
+//Captures a short video
+function captureTestVideo() {
+    record();
+    setTimeout(record, 5000);
+}
 
 var isRecording = false;
 function record() {
@@ -93,61 +98,49 @@ let continuePingingBlobs = false;
 
 async function startRecording() {
     blobs = [];
-    mediaRecorder.start(100);
+    mediaRecorder.start();
     continuePingingBlobs = true;
-    pingBlobsArray();
+    pingDom();
 }
 
 /*
  * A function to ensure that blobs[] is written to correctly.
- *
- * Weird behavior, initial observation: If video isn't streamed to an HTML <video> element,
- *  file size is very small and only few secs are recorded.
- *  Also, `document.getElementById('video')` works but `document.createElement('video')` doesn't work
- * Inference: If blobs[] isn't accessed frequently, the writes stagnate and very few blob elements are present finally
- *  Repeatedly accessing blobs[] seems to induce the same behavior as streaming to <video>
- * Eg: For a video of 5s:
- *   When <video> is used,       blobs.length 42,    size 833kb
- *   When <video> is not used,   blobs.length 6,     size 157kb
- * So try replacing <video> with frequent blobs.length calls
- *   When timeout 10ms,          blobs.length 45,    size 930kb
- *   When timeout 20ms,          blobs.length 43,    size 840kb
- *   When timeout 100ms,         blobs.length 32,    size 467kb
- *   When timeout 1000ms,        blobs.length 10,    size 193kb
+ * Without this, file size is very small and only few secs are recorded,
+ * since without this mediaRecorder.ondataavailable exhibits unexpected behavior
+ * Refer: https://github.com/CatalanCabbage/electron-vlog/issues/4
 */
-async function pingBlobsArray() {
+let pingDomFrequency = 10;
+var dummyElem = document.createElement('div');
+dummyElem.style.cssText = 'opacity: 0.01; position: fixed; font-size: 1px; z-index: 10000';
+//document.body.appendChild(dummyElem); //Won't work if element is not rendered in the DOM
+async function pingDom() {
     if(continuePingingBlobs == true) {
-        console.log(blobs.length);
-        setTimeout(pingBlobsArray, 20);
+        mediaRecorder.requestData();
+        dummyElem.innerHTML = '.';
+        setTimeout(pingDom, pingDomFrequency);
     }
 }
 
 async function stopRecording() {
-    mediaRecorder.stop();
     continuePingingBlobs = false;
+    mediaRecorder.requestData();
+    mediaRecorder.stop();
+    console.log('Total size from dataavailable events is: ' + (totalSize / 1000) + 'kb');
     saveVideo();
-    console.log(blobs.length)
 }
 
+let totalSize = 0;
 async function handleStream(stream) {
-    showVideo(stream);
     //Init mediarecorder
     mediaRecorder = new MediaRecorder(stream, {
         mimeType: videoMimeType,
     });
     mediaRecorder.ondataavailable = e => {
+        totalSize += e.data.size;
         if (e.data && e.data.size > 0) {
             blobs.push(e.data);
         }
     };
-}
-
-//var video = document.getElementById('video');
-var video = document.createElement('video');
-
-async function showVideo(stream) {
-    video.srcObject = stream;
-    video.play();
 }
 
 var imgDir = path.join(app.getPath('pictures'), 'electron-vlog', 'screenshots');
