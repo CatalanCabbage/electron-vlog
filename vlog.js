@@ -112,7 +112,7 @@ async function startRecording() {
 let pingDomFrequency = 10;
 var dummyElem = document.createElement('div');
 dummyElem.style.cssText = 'opacity: 0.01; position: fixed; font-size: 1px; z-index: 10000';
-//document.body.appendChild(dummyElem); //Won't work if element is not rendered in the DOM
+document.body.appendChild(dummyElem); //Won't work if element is not rendered in the DOM
 async function pingDom() {
     if(continuePingingBlobs == true) {
         mediaRecorder.requestData();
