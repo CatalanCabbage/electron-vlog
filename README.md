@@ -11,6 +11,8 @@
 - Comprehensive options
     - [ ] Path to save media
     - [ ] Media naming format
+    - [ ] Debug option
+    - [ ] Callback on image save - even prevent save
     - Timelapse
         - [ ] Time interval between screenshots 
     - Screenshots
