@@ -21,6 +21,6 @@
 - [ ] Have tests for all cases
 
 ### To-do:
-- [ ] Create a separate repo for testing 
-- [ ] Simulate npm package locally
+- [x] Create a separate repo for testing *-[electron-vlog-experiments](https://github.com/CatalanCabbage/electron-vlog-experiments)*
+- [x] Simulate npm package locally
 - [ ] Write tests!
