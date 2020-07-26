@@ -36,11 +36,10 @@ function captureScreenshot(options) {
 
 var timelapseInterval = 2000;
 function startTimelapse(options) {
-    //Get Screenshot data - captureScreenshot needs to return img, size, full path
-    //Compare
-    //Save to directory if different
     if(!isTimelapseActive) {
-        console.log('Quitting tlapse');
+        console.log('Quitting tlapse; total images captured: ' + timelapseImageCount);
+        timelapseImageCache = ''; //When quitting, clear previous cache
+        timelapseImageCount = 0; //When quitting, clear count
         return;
     }
     
@@ -92,14 +91,12 @@ async function handleStreamForScreenshot(stream, options) {
         // Draw video on canvas
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        var image = canvas.toDataURL('image/jpeg');
-        var imageParsedBase64 = image.replace(/^data:image\/jpeg;base64,/, '');
+        var image = canvas.toDataURL('image/png');
+        var imageParsedBase64 = image.replace(/^data:image\/png;base64,/, '');
         var imageBuffer = Buffer.from(imageParsedBase64, 'base64');
         options.fileNamePrefix = 'window';
         if(options.mode == 'timelapse') {
-            //Cache this image
-            //Compare with cache. If cache is empty, save this.
-            if(isImageDifferent()) {
+            if(shouldTimelapseImageBeSaved(imageBuffer)) {
                 saveScreenshot(imageBuffer, options);
             } else {
                 console.log('Same as previous image, not saving');
@@ -121,10 +118,6 @@ async function handleStreamForScreenshot(stream, options) {
     };
 }
 
-//Compare with previous
-function isImageDifferent() {
-    return true;
-}
 
 //Create directory if not present, return complete path
 function getImgPath(options) {
@@ -137,15 +130,42 @@ function getImgPath(options) {
         fs.mkdirSync(imgDir, {recursive: true});
     }
     //Generate complete path
-    var imgPath = path.join(imgDir, fileNamePrefix + '-' + new Date().getTime() + '.jpeg');
+    var imgPath = path.join(imgDir, fileNamePrefix + '-' + new Date().getTime() + '.png');
     return imgPath;
 }
 
+let timelapseImageCache = '';
+function shouldTimelapseImageBeSaved(image) {
+
+    //If first time, persist to cache and save image too
+    if(timelapseImageCache == '') {
+        timelapseImageCache = image;
+        return true;
+    }
+    //If same image as previous, don't save
+    if(isImageSame(timelapseImageCache, image)) {
+        return false;
+    }
+    //If different, update cache and save image too
+    timelapseImageCache = image;
+    return true;
+}
+
+//A very crude compare; just check length of the image that's a buffer
+function isImageSame(image1, image2) {
+    console.log('Old cache:' + image1.length + ' current image: ' + image2.length + ' and result: ' + (image1.length == image2.length));
+    return (image1.length == image2.length);
+}
+
+timelapseImageCount = 0;
 function saveScreenshot(data, options) {
     var imgPath = getImgPath(options);
 
     console.log('Saving image to ' + imgPath);
-    fs.writeFileSync(imgPath, data, 'base64'); 
+    fs.writeFileSync(imgPath, data, 'base64');
+    if(options.mode == 'timelapse') {
+        timelapseImageCount++;
+    }
 }
 
 async function captureVisibleArea(options) {
@@ -160,15 +180,15 @@ async function captureVisibleArea(options) {
         });
 
     options.fileNamePrefix = 'visible';
+    let imgArray = img.toPNG(1); //Type: Uint8Array
+
     if(options.mode == 'timelapse') {
-        //Save this image
-        //Compare with previous; if previous is empty, save this.
-        if(isImageDifferent()) {
-            saveScreenshot(img.toJPEG(100), options);
+        if(shouldTimelapseImageBeSaved(imgArray)) {
+            saveScreenshot(imgArray, options);
         } else {
             console.log('Same as previous image, not saving');
         }
     } else {
-        saveScreenshot(img.toJPEG(100), options);
+        saveScreenshot(imgArray, options);
     }
 }
