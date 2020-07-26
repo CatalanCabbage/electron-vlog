@@ -2,26 +2,52 @@
 const electron = require('electron');
 const app = electron.remote.app;
 
-
 const path = require('path');
 const fs = require('fs');
 const {desktopCapturer} = require('electron');
 const imageUtils = require('./imageUtils');
 
+module.exports = {screenshot: captureScreenshot, toggleTimelapse: toggleTimelapse, toggleRecording: record};
+
+//Wrapper with sane defaults
+function captureScreenshot(options) {
+    let defaultOptions = {
+        childDirectory: ''
+    };
+
+    if(options === null || Object.prototype.toString.call(options) !== '[object Object]') {
+        console.log('Options for screenshot is invalid; proceeding with defaults');
+        options = defaultOptions;
+    }
+    options.mode = 'screenshot';
+
+    imageUtils.captureScreenshot(options);
+}
+
+//Wrapper with sane defaults
+function toggleTimelapse(options) {
+    let defaultOptions = {
+        childDirectory: 'timelapse'
+    };
+
+    if(options === null || Object.prototype.toString.call(options) !== '[object Object]') {
+        console.log('Options for screenshot is invalid; proceeding with defaults');
+        options = defaultOptions;
+    }
+    options.mode = 'timelapse';
+
+    imageUtils.toggleTimelapse(options);
+}
+
 document.onreadystatechange = () => {
     if (document.readyState == 'complete') {
-        setCurrentTime();
 
         //Add key bindings for screenshot
         document.onkeyup = function(event) {
             var key = event.key || event.keyCode;
             //Ctrl + Shift + M to capture screenshot
             if((key == 'm' || key == 'M' || key == 77) && event.ctrlKey == true && event.shiftKey == true) {
-                let options = {
-                    mode: 'screenshot',
-                    childDirectory: ''
-                };
-                imageUtils.captureScreenshot(options);
+                captureScreenshot();
             }
             //Ctrl + Shift + N to record screen
             if((key == 'n' || key == 'N' || key == 78) && event.ctrlKey == true && event.shiftKey == true) {
@@ -29,34 +55,13 @@ document.onreadystatechange = () => {
             }
             //Ctrl + Shift + B to record timelapse
             if((key == 'b' || key == 'B' || key == 79) && event.ctrlKey == true && event.shiftKey == true) {
-                let options = {
-                    mode: 'timelapse',
-                    childDirectory: 'timelapse'
-                };
-                imageUtils.toggleTimelapse(options);
+                toggleTimelapse();
             }
         };
 
         initRecording();
-        //setTimeout(captureTestVideo, 1000);
     }
 };
-
-
-//Populate time in test webpage
-function setCurrentTime() {
-    var timeElem = document.getElementById('time');
-    var d = new Date();
-    var dateStr = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
-    timeElem.innerHTML = dateStr;
-    setTimeout(setCurrentTime, 1000);
-}
-
-//Captures a short video
-function captureTestVideo() {
-    record();
-    setTimeout(record, 5000);
-}
 
 var isRecording = false;
 function record() {
@@ -77,6 +82,7 @@ var mediaRecorder;
 
 async function initRecording() {
     var title = document.title;
+    console.log('initiated recording stream for ' + title);
     var sources = await desktopCapturer.getSources({types: ['window', 'screen']});
     sources.forEach(async (src) => {
         if (src.name == title) {
