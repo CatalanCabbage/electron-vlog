@@ -38,7 +38,7 @@ document.onreadystatechange = () => {
         };
 
         initRecording();
-        setTimeout(captureTestVideo, 1000);
+        //setTimeout(captureTestVideo, 1000);
     }
 };
 
@@ -47,7 +47,7 @@ document.onreadystatechange = () => {
 function setCurrentTime() {
     var timeElem = document.getElementById('time');
     var d = new Date();
-    var dateStr = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ':' + d.getMilliseconds();
+    var dateStr = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
     timeElem.innerHTML = dateStr;
     setTimeout(setCurrentTime, 1000);
 }
@@ -126,7 +126,7 @@ async function stopRecording() {
     mediaRecorder.requestData();
     mediaRecorder.stop();
     console.log('Total size from dataavailable events is: ' + (totalSize / 1000) + 'kb');
-    saveVideo();
+    setTimeout(saveVideo, 1000); //Timeout to wait for last blob to be captured. Can be improved
 }
 
 let totalSize = 0;
