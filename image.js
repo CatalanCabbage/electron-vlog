@@ -5,8 +5,8 @@ const app = electron.remote.app;
 const path = require('path');
 var fs = require('fs');
 
-let imageUtils = {captureScreenshot: captureScreenshot, toggleTimelapse: toggleTimelapse};
-module.exports = imageUtils;
+let imageExports = {captureScreenshot: captureScreenshot, toggleTimelapse: toggleTimelapse};
+module.exports = imageExports;
 
 var imgBaseDir = path.join(app.getPath('pictures'), 'electron-vlog', 'screenshots');
 
@@ -157,7 +157,7 @@ function isImageSame(image1, image2) {
     return (image1.length == image2.length);
 }
 
-timelapseImageCount = 0;
+let timelapseImageCount = 0;
 function saveScreenshot(data, options) {
     var imgPath = getImgPath(options);
 
