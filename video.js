@@ -69,7 +69,6 @@ dummyElem.style.cssText = 'opacity: 0.01; position: fixed; font-size: 1px; z-ind
 document.body.appendChild(dummyElem); //Won't work if element is not rendered in the DOM
 async function pingDom() {
     if(continuePingingBlobs == true) {
-        mediaRecorder.requestData();
         dummyElem.innerHTML = '.';
         setTimeout(pingDom, pingDomFrequency);
     }
@@ -79,9 +78,11 @@ async function stopRecording() {
     continuePingingBlobs = false;
     mediaRecorder.requestData();
     mediaRecorder.stop();
-    console.log('Total size from dataavailable events is: ' + (totalSize / 1000) + 'kb');
-    totalSize = 0;
-    setTimeout(saveVideo, 1000); //Timeout to wait for last blob to be captured. Can be improved
+    setTimeout(()=> {
+        console.log('Total size from dataavailable events is: ' + (totalSize / 1000) + 'kb');
+        totalSize = 0;
+        saveVideo();
+    }, 1000); //Timeout to wait for last blob to be captured. Can be improved
 }
 
 let totalSize = 0;
