@@ -29,7 +29,13 @@ document.onreadystatechange = () => {
     }
 };
 
-//Wrapper with sane defaults
+/**
+ * Wrapper with sane defaults
+ * @param {Object} options
+ * @param {String} [options.childDirectory]
+ * @param {String} [options.fileNamePrefix]
+ * @param {'timelapse'|'screenshot'} [options.mode]
+ */
 function captureScreenshot(options) {
     let defaultOptions = {
         childDirectory: ''
@@ -44,7 +50,13 @@ function captureScreenshot(options) {
     image.captureScreenshot(options);
 }
 
-//Wrapper with sane defaults
+/**
+ * Wrapper with sane defaults
+ * @param {Object} options
+ * @param {String} [options.childDirectory]
+ * @param {String} [options.fileNamePrefix]
+ * @param {'timelapse'|'screenshot'} [options.mode]
+ */
 function toggleTimelapse(options) {
     let defaultOptions = {
         childDirectory: 'timelapse'

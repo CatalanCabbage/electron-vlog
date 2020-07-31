@@ -1,5 +1,5 @@
 const electron = require('electron');
-const BrowserWindow = electron.remote.BrowserWindow; 
+const BrowserWindow = electron.remote.BrowserWindow;
 const {desktopCapturer} = require('electron');
 const app = electron.remote.app;
 const path = require('path');
@@ -42,7 +42,7 @@ function startTimelapse(options) {
         timelapseImageCount = 0; //When quitting, clear count
         return;
     }
-    
+
     captureScreenshot(options);
     setTimeout(() => {
         startTimelapse(options);
@@ -74,6 +74,14 @@ async function captureWindow(options) {
     });
 }
 
+/**
+ *
+ * @param stream
+ * @param {Object} options
+ * @param {String} [options.fileNamePrefix]
+ * @param {'timelapse'|'screenshot'} [options.mode]
+ * @return {Promise<void>}
+ */
 async function handleStreamForScreenshot(stream, options) {
     var video = document.createElement('video');
     video.style.cssText = 'position:absolute;top:-10000px;left:-10000px;';
@@ -105,7 +113,6 @@ async function handleStreamForScreenshot(stream, options) {
             saveScreenshot(imageBuffer, options);
         }
 
-
         // Remove hidden video tag
         video.remove();
 
@@ -118,8 +125,13 @@ async function handleStreamForScreenshot(stream, options) {
     };
 }
 
-
-//Create directory if not present, return complete path
+/**
+ * Create directory if not present and return complete path
+ * @param {Object} options
+ * @param {String} options.childDirectory
+ * @param {String} options.fileNamePrefix
+ * @return {string} complete path
+ */
 function getImgPath(options) {
     let childDirectory = options.childDirectory;
     let fileNamePrefix = options.fileNamePrefix;
@@ -142,27 +154,32 @@ function shouldTimelapseImageBeSaved(image) {
         timelapseImageCache = image;
         return true;
     }
-    //If same image as previous, don't save
     if(isImageSame(timelapseImageCache, image)) {
         return false;
     }
-    //If different, update cache and save image too
     timelapseImageCache = image;
     return true;
 }
 
-//A very crude compare; just check length of the image that's a buffer
+//A very crude compare; just compare length of the images
 function isImageSame(image1, image2) {
     console.log('Old cache:' + image1.length + ' current image: ' + image2.length + ' and result: ' + (image1.length == image2.length));
     return (image1.length == image2.length);
 }
 
 let timelapseImageCount = 0;
-function saveScreenshot(data, options) {
+/**
+ * @param imgData
+ * @param {Object} options
+ * @param {String} [options.childDirectory]
+ * @param {String} [options.fileNamePrefix]
+ * @param {'timelapse'|'screenshot'} [options.mode]
+ * */
+function saveScreenshot(imgData, options) {
     var imgPath = getImgPath(options);
 
     console.log('Saving image to ' + imgPath);
-    fs.writeFileSync(imgPath, data, 'base64');
+    fs.writeFileSync(imgPath, imgData, 'base64');
     if(options.mode == 'timelapse') {
         timelapseImageCount++;
     }
