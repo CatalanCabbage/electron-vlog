@@ -13,31 +13,43 @@ var imgBaseDir = path.join(app.getPath('pictures'), 'electron-vlog', 'screenshot
 var isTimelapseActive = false;
 function toggleTimelapse(options) {
     if(!isTimelapseActive) {
-        console.log('Starting tlapse');
         isTimelapseActive = true;
         startTimelapse(options);
+        console.log('Started timelapse');
     } else {
-        console.log('Stopping tlapse');
         isTimelapseActive = false;
     }
 }
 
-var captureFullWindow = false;
+/**
+ * @param {Object} options
+ * @param {Boolean} [options.captureFullWindow]
+ * @param {String} [options.childDirectory]
+ * @param {String} [options.fileNamePrefix]
+ * @param {'timelapse'|'screenshot'} [options.mode]
+ */
 function captureScreenshot(options) {
-    if(captureFullWindow) {
-        console.log('Capturing full screen');
+    if(options.captureFullWindow) {
+        console.debug('Capturing full screen');
         captureWindow(options);
     } else {
-        console.log('Capturing visible');
+        console.debug('Capturing visible');
         captureVisibleArea(options);
     }
 }
 
 
-var timelapseInterval = 2000;
+/**
+ * @param {Object} options
+ * @param {Boolean} [options.captureFullWindow]
+ * @param {String} [options.childDirectory]
+ * @param {String} [options.fileNamePrefix]
+ * @param {Number} [options.timelapseInterval]
+ * @param {'timelapse'|'screenshot'} [options.mode]
+ */
 function startTimelapse(options) {
     if(!isTimelapseActive) {
-        console.log('Quitting tlapse; total images captured: ' + timelapseImageCount);
+        console.log('Stopped timelapse; total images captured: ' + timelapseImageCount);
         timelapseImageCache = ''; //When quitting, clear previous cache
         timelapseImageCount = 0; //When quitting, clear count
         return;
@@ -46,9 +58,15 @@ function startTimelapse(options) {
     captureScreenshot(options);
     setTimeout(() => {
         startTimelapse(options);
-    }, timelapseInterval);
+    }, options.timelapseInterval);
 }
 
+/**
+ * @param {Object} options
+ * @param {String} [options.childDirectory]
+ * @param {String} [options.fileNamePrefix]
+ * @param {'timelapse'|'screenshot'} [options.mode]
+ */
 async function captureWindow(options) {
     var title = document.title;
     var sources = await desktopCapturer.getSources({types: ['window', 'screen']});
@@ -163,7 +181,7 @@ function shouldTimelapseImageBeSaved(image) {
 
 //A very crude compare; just compare length of the images
 function isImageSame(image1, image2) {
-    console.log('Old cache:' + image1.length + ' current image: ' + image2.length + ' and result: ' + (image1.length == image2.length));
+    console.debug('Old cache:' + image1.length + ' current image: ' + image2.length + ' and result: ' + (image1.length == image2.length));
     return (image1.length == image2.length);
 }
 
@@ -178,13 +196,19 @@ let timelapseImageCount = 0;
 function saveScreenshot(imgData, options) {
     var imgPath = getImgPath(options);
 
-    console.log('Saving image to ' + imgPath);
     fs.writeFileSync(imgPath, imgData, 'base64');
+    console.log('Saved image to ' + imgPath);
     if(options.mode == 'timelapse') {
         timelapseImageCount++;
     }
 }
 
+/**
+ * @param {Object} options
+ * @param {String} [options.childDirectory]
+ * @param {String} [options.fileNamePrefix]
+ * @param {'timelapse'|'screenshot'} [options.mode]
+ */
 async function captureVisibleArea(options) {
     let win = BrowserWindow.getFocusedWindow();
     if(win == null) {

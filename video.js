@@ -14,12 +14,11 @@ module.exports = videoExports;
 var isRecording = false;
 function record() {
     if(!isRecording) {
-        console.log('Going to start recording');
         startRecording();
         isRecording = true;
     } else {
-        console.log('Going to stop recording');
         stopRecording();
+        console.log('Stopped recording');
         isRecording = false;
     }
 }
@@ -30,7 +29,7 @@ var mediaRecorder;
 
 async function initRecording() {
     var title = document.title;
-    console.log('initiated recording stream for ' + title);
+    console.debug('Initiated recording stream for ' + title);
     var sources = await desktopCapturer.getSources({types: ['window', 'screen']});
     sources.forEach(async (src) => {
         if (src.name == title) {
@@ -53,8 +52,10 @@ let continuePingingBlobs = false;
 async function startRecording() {
     blobs = [];
     mediaRecorder.start();
+    console.log('Started recording');
     continuePingingBlobs = true;
     pingDom();
+    console.debug('Started pinging dom');
 }
 
 /*
@@ -71,6 +72,8 @@ async function pingDom() {
     if(continuePingingBlobs == true) {
         dummyElem.innerHTML = '.';
         setTimeout(pingDom, pingDomFrequency);
+    } else {
+        console.debug('Stopped pinging dom');
     }
 }
 
@@ -79,7 +82,7 @@ async function stopRecording() {
     mediaRecorder.requestData();
     mediaRecorder.stop();
     setTimeout(()=> {
-        console.log('Total size from dataavailable events is: ' + (totalSize / 1000) + 'kb');
+        console.debug('Total size from dataavailable events is: ' + (totalSize / 1000) + 'kb');
         totalSize = 0;
         saveVideo();
     }, 1000); //Timeout to wait for last blob to be captured. Can be improved
@@ -87,13 +90,13 @@ async function stopRecording() {
 
 let totalSize = 0;
 async function handleStream(stream) {
-    //Init mediarecorder
     mediaRecorder = new MediaRecorder(stream, {
         mimeType: videoMimeType,
     });
     mediaRecorder.ondataavailable = e => {
         totalSize += e.data.size;
         if (e.data && e.data.size > 0) {
+            console.debug('dataavailable event triggered with blob size ' + e.data.size/1000 + 'kb');
             blobs.push(e.data);
         }
     };
@@ -108,10 +111,8 @@ async function saveVideo() {
     var blob = new Blob(blobs, {type: videoMimeType});
     var buffer = Buffer.from(await blob.arrayBuffer());
 
-    console.log('File size: ' + buffer.length/1000 + 'kb');
-
     var vidPath = path.join(imgDir, new Date().getTime() + '.webm');
-    console.log('Saving video to ' + vidPath);
 
     fs.writeFileSync(vidPath, buffer);
+    console.log('Video of size ' + buffer.length/1000 + 'kb saved as ' + vidPath);
 }
