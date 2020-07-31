@@ -11,14 +11,34 @@ module.exports = imageExports;
 var imgBaseDir = path.join(app.getPath('pictures'), 'electron-vlog', 'screenshots');
 
 var isTimelapseActive = false;
+let timerControlVar;
+let captureFullWindowText = {
+    true: 'Full window',
+    false: 'Visible area'
+};
 function toggleTimelapse(options) {
-    if(!isTimelapseActive) {
+    if(!isTimelapseActive && timerControlVar == null) {
         isTimelapseActive = true;
         startTimelapse(options);
-        console.log('Started timelapse');
+        console.log('Started timelapse, area to be captured: ' + captureFullWindowText[options.captureFullWindow]);
+        //Set timer if present
+        if(options.timeout > 0) {
+            timerControlVar = setTimeout(() => {
+                console.debug('Timelapse Timer expired');
+                stopTimelapse();
+            }, options.timeout);
+        }
     } else {
-        isTimelapseActive = false;
+        stopTimelapse();
     }
+}
+
+function stopTimelapse() {
+    if(timerControlVar != null) {
+        clearTimeout(timerControlVar);
+        timerControlVar = null;
+    }
+    isTimelapseActive = false;
 }
 
 /**
@@ -30,10 +50,14 @@ function toggleTimelapse(options) {
  */
 function captureScreenshot(options) {
     if(options.captureFullWindow) {
-        console.debug('Capturing full screen');
+        if (options.mode != 'timelapse') {
+            console.debug('Capturing full screen');
+        }
         captureWindow(options);
     } else {
-        console.debug('Capturing visible');
+        if (options.mode != 'timelapse') {
+            console.debug('Capturing visible');
+        }
         captureVisibleArea(options);
     }
 }
@@ -49,9 +73,10 @@ function captureScreenshot(options) {
  */
 function startTimelapse(options) {
     if(!isTimelapseActive) {
-        console.log('Stopped timelapse; total images captured: ' + timelapseImageCount);
-        timelapseImageCache = ''; //When quitting, clear previous cache
-        timelapseImageCount = 0; //When quitting, clear count
+        console.log('Stopped timelapse; total images captured: ' + timelapseImageCount + ', directory: ' + imgDir);
+        //When quitting, clear previous cache and count
+        timelapseImageCache = '';
+        timelapseImageCount = 0;
         return;
     }
 
@@ -125,7 +150,7 @@ async function handleStreamForScreenshot(stream, options) {
             if(shouldTimelapseImageBeSaved(imageBuffer)) {
                 saveScreenshot(imageBuffer, options);
             } else {
-                console.log('Same as previous image, not saving');
+                console.debug('Same as previous image, not saving');
             }
         } else {
             saveScreenshot(imageBuffer, options);
@@ -143,6 +168,7 @@ async function handleStreamForScreenshot(stream, options) {
     };
 }
 
+let imgDir;
 /**
  * Create directory if not present and return complete path
  * @param {Object} options
@@ -154,14 +180,15 @@ function getImgPath(options) {
     let childDirectory = options.childDirectory;
     let fileNamePrefix = options.fileNamePrefix;
 
-    var imgDir = path.join(imgBaseDir, childDirectory);
+    imgDir = path.join(imgBaseDir, childDirectory);
     //Create Directory
     if (!fs.existsSync(imgDir)) {
         fs.mkdirSync(imgDir, {recursive: true});
     }
     //Generate complete path
-    var imgPath = path.join(imgDir, fileNamePrefix + '-' + new Date().getTime() + '.png');
-    return imgPath;
+    let imgName = fileNamePrefix + '-' + new Date().getTime() + '.png';
+    var imgPath = path.join(imgDir, imgName);
+    return {imgPath: imgPath, imgName: imgName};
 }
 
 let timelapseImageCache = '';
@@ -181,7 +208,7 @@ function shouldTimelapseImageBeSaved(image) {
 
 //A very crude compare; just compare length of the images
 function isImageSame(image1, image2) {
-    console.debug('Old cache:' + image1.length + ' current image: ' + image2.length + ' and result: ' + (image1.length == image2.length));
+    //console.debug('Previous image vs current image: ' + image1.length + ' and ' + image2.length + '. Is same = ' + (image1.length == image2.length));
     return (image1.length == image2.length);
 }
 
@@ -194,10 +221,17 @@ let timelapseImageCount = 0;
  * @param {'timelapse'|'screenshot'} [options.mode]
  * */
 function saveScreenshot(imgData, options) {
-    var imgPath = getImgPath(options);
+    let imgProps = getImgPath(options);
+    let imgPath = imgProps.imgPath;
+    let imgName = imgProps.imgName;
 
     fs.writeFileSync(imgPath, imgData, 'base64');
-    console.log('Saved image to ' + imgPath);
+    if (options.mode == 'timelapse') {
+        console.info('#' + (timelapseImageCount + 1) + ' Saved image ' + imgName);
+    } else {
+        console.log('Saved image to ' + imgPath);
+    }
+
     if(options.mode == 'timelapse') {
         timelapseImageCount++;
     }
@@ -212,7 +246,7 @@ function saveScreenshot(imgData, options) {
 async function captureVisibleArea(options) {
     let win = BrowserWindow.getFocusedWindow();
     if(win == null) {
-        console.log('No focussed window');
+        console.debug('No focussed window');
         return;
     }
     var img = await win.webContents.capturePage()
@@ -227,7 +261,7 @@ async function captureVisibleArea(options) {
         if(shouldTimelapseImageBeSaved(imgArray)) {
             saveScreenshot(imgArray, options);
         } else {
-            console.log('Same as previous image, not saving');
+            console.debug('Same as previous image, not saving');
         }
     } else {
         saveScreenshot(imgArray, options);

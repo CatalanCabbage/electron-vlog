@@ -6,20 +6,27 @@ const path = require('path');
 const fs = require('fs');
 const {desktopCapturer} = require('electron');
 
-let videoExports = {initRecording: initRecording, toggleRecording: record};
+let videoExports = {initRecording: initRecording, toggleRecording: toggleRecording};
 module.exports = videoExports;
 
-
-
-var isRecording = false;
-function record() {
-    if(!isRecording) {
-        startRecording();
-        isRecording = true;
-    } else {
+let timerControlVar;
+function toggleRecording(options) {
+    //If timer is active or recording is active, clear and stop recording
+    if (timerControlVar != null) {
+        clearTimeout(timerControlVar);
+        timerControlVar = null;
         stopRecording();
-        console.log('Stopped recording');
-        isRecording = false;
+    } else if ((mediaRecorder != null && mediaRecorder.state == 'recording')) {
+        stopRecording();
+    } else {
+        startRecording();
+        //After starting, automatically stop recording after options.timeout ms
+        if(options.timeout > 0) {
+            timerControlVar = setTimeout(() => {
+                stopRecording();
+                console.debug('Timer ended');
+            }, options.timeout);
+        }
     }
 }
 
@@ -29,7 +36,7 @@ var mediaRecorder;
 
 async function initRecording() {
     var title = document.title;
-    console.debug('Initiated recording stream for ' + title);
+    console.debug('Initiated recording stream for title: "' + title + '"');
     var sources = await desktopCapturer.getSources({types: ['window', 'screen']});
     sources.forEach(async (src) => {
         if (src.name == title) {
@@ -81,6 +88,7 @@ async function stopRecording() {
     continuePingingBlobs = false;
     mediaRecorder.requestData();
     mediaRecorder.stop();
+    console.log('Stopped recording');
     setTimeout(()=> {
         console.debug('Total size from dataavailable events is: ' + (totalSize / 1000) + 'kb');
         totalSize = 0;
