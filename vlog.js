@@ -34,17 +34,17 @@ document.onreadystatechange = () => {
  * @param {Object} options
  * @param {String} [options.childDirectory]
  * @param {String} [options.fileNamePrefix]
- * @param {'timelapse'|'screenshot'} [options.mode]
+ * @param {Boolean} [options.captureFullWindow]
  */
 function captureScreenshot(options) {
     let defaultOptions = {
         childDirectory: ''
     };
 
-    if(options === null || Object.prototype.toString.call(options) !== '[object Object]') {
-        console.log('Options for screenshot is invalid; proceeding with defaults');
+    if (!isOptionsValid(options)) {
         options = defaultOptions;
     }
+
     options.mode = 'screenshot';
 
     image.captureScreenshot(options);
@@ -55,22 +55,92 @@ function captureScreenshot(options) {
  * @param {Object} options
  * @param {String} [options.childDirectory]
  * @param {String} [options.fileNamePrefix]
- * @param {'timelapse'|'screenshot'} [options.mode]
+ * @param {Number} [options.timelapseInterval]
+ * @param {Boolean} [options.captureFullWindow]
+ * @param {Number} [options.timeout]
  */
 function toggleTimelapse(options) {
+    let minutes = 0.5;
     let defaultOptions = {
-        childDirectory: 'timelapse'
+        childDirectory: 'timelapse',
+        timelapseInterval: 2000,
+        timeout: 1000 * 60 * minutes
     };
 
-    if(options === null || Object.prototype.toString.call(options) !== '[object Object]') {
-        console.log('Options for screenshot is invalid; proceeding with defaults');
+    if (!isOptionsValid(options)) {
         options = defaultOptions;
+    } else {
+        if (!isTlapseIntervalValid(options)) {
+            options.timelapseInterval = 2000;
+        }
+        if (!isTimeoutValid(options)) {
+            options.timeout = 1000 * 60 * minutes;
+        }
     }
-    options.mode = 'timelapse';
 
+    options.mode = 'timelapse';
     image.toggleTimelapse(options);
 }
 
-function toggleRecording() {
-    video.toggleRecording();
+/**
+ * Wrapper with sane defaults
+ * @param {Object} options
+ * @param {Number} [options.timeout]
+ */
+function toggleRecording(options) {
+    let minutes = 0.5;
+    let defaultOptions = {
+        timeout : 1000 * 60 * minutes
+    };
+
+    if(!isOptionsValid(options)) {
+        options = defaultOptions;
+    } else {
+        if (!isTimeoutValid(options)) {
+            options.timeout = 1000 * 60 * minutes;
+        }
+    }
+    video.toggleRecording(options);
+}
+
+/**
+ * @return {true|false}
+ */
+function isOptionsValid(options) {
+    if(options == null) {
+        console.debug('options param is empty, proceeding with defaults');
+        return false;
+    } else if (Object.prototype.toString.call(options) !== '[object Object]') {
+        console.log('options is not an Object, proceeding with defaults');
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @return {true|false}
+ */
+function isTlapseIntervalValid(options) {
+    if (options.timelapseInterval == null) {
+        console.debug('options.timelapseInterval is empty, proceeding with defaults');
+        return false;
+    } else if (isNaN(options.timelapseInterval)) {
+        console.log('options.timelapseInterval is NaN, proceeding with defaults');
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @return {true|false}
+ */
+function isTimeoutValid(options) {
+    if (options.timeout == null) {
+        console.debug('options.timeout is empty, proceeding with defaults');
+        return false;
+    } else if (isNaN(options.timeout)) {
+        console.log('options.timeout is NaN, proceeding with defaults');
+        return false;
+    }
+    return true;
 }
