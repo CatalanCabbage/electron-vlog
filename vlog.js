@@ -1,7 +1,13 @@
 const image = require('./image');
 const video = require('./video');
+var utils = require('./utils');
 
-const vlogExports = {captureScreenshot: captureScreenshot, toggleTimelapse: toggleTimelapse, toggleRecording: toggleRecording};
+/**
+ * @module electron-vlog
+ */
+
+const vlogExports = {captureScreenshot: captureScreenshot,
+    toggleTimelapse: toggleTimelapse, toggleRecording: toggleRecording, setConfig: setConfig};
 module.exports = vlogExports;
 
 
@@ -29,6 +35,12 @@ document.onreadystatechange = () => {
     }
 };
 
+function setConfig(configOptions) {
+    if (isObject(configOptions)) {
+        setLogLevel(configOptions.logLevel);
+    }
+}
+
 /**
  * Wrapper with sane defaults
  * @param {Object} options
@@ -41,8 +53,12 @@ function captureScreenshot(options) {
         childDirectory: ''
     };
 
-    if (!isOptionsValid(options)) {
+    if (!isObject(options)) {
         options = defaultOptions;
+    } else {
+        if (options.captureFullWindow == null) {
+            options.captureFullWindow = false;
+        }
     }
 
     options.mode = 'screenshot';
@@ -67,7 +83,7 @@ function toggleTimelapse(options) {
         timeout: 1000 * 60 * minutes
     };
 
-    if (!isOptionsValid(options)) {
+    if (!isObject(options)) {
         options = defaultOptions;
     } else {
         if (!isTlapseIntervalValid(options)) {
@@ -75,6 +91,9 @@ function toggleTimelapse(options) {
         }
         if (!isTimeoutValid(options)) {
             options.timeout = 1000 * 60 * minutes;
+        }
+        if (options.captureFullWindow == null) {
+            options.captureFullWindow = false;
         }
     }
 
@@ -93,7 +112,7 @@ function toggleRecording(options) {
         timeout : 1000 * 60 * minutes
     };
 
-    if(!isOptionsValid(options)) {
+    if(!isObject(options)) {
         options = defaultOptions;
     } else {
         if (!isTimeoutValid(options)) {
@@ -106,12 +125,12 @@ function toggleRecording(options) {
 /**
  * @return {true|false}
  */
-function isOptionsValid(options) {
+function isObject(options) {
     if(options == null) {
-        console.debug('options param is empty, proceeding with defaults');
+        utils.debug('options param is empty');
         return false;
     } else if (Object.prototype.toString.call(options) !== '[object Object]') {
-        console.log('options is not an Object, proceeding with defaults');
+        utils.warn('options is not an Object');
         return false;
     }
     return true;
@@ -122,10 +141,10 @@ function isOptionsValid(options) {
  */
 function isTlapseIntervalValid(options) {
     if (options.timelapseInterval == null) {
-        console.debug('options.timelapseInterval is empty, proceeding with defaults');
+        utils.debug('options.timelapseInterval is empty, proceeding with defaults');
         return false;
     } else if (isNaN(options.timelapseInterval)) {
-        console.log('options.timelapseInterval is NaN, proceeding with defaults');
+        utils.log('options.timelapseInterval is NaN, proceeding with defaults');
         return false;
     }
     return true;
@@ -136,11 +155,20 @@ function isTlapseIntervalValid(options) {
  */
 function isTimeoutValid(options) {
     if (options.timeout == null) {
-        console.debug('options.timeout is empty, proceeding with defaults');
+        utils.debug('options.timeout is empty, proceeding with defaults');
         return false;
     } else if (isNaN(options.timeout)) {
-        console.log('options.timeout is NaN, proceeding with defaults');
+        utils.log('options.timeout is NaN, proceeding with defaults');
         return false;
     }
     return true;
+}
+
+/**
+ * @param {DEBUG, INFO, ERROR, OFF} inputLogLevel
+ */
+function setLogLevel(inputLogLevel) {
+    if (inputLogLevel != null) {
+        utils.setLogLevel(inputLogLevel);
+    }
 }

@@ -5,6 +5,7 @@ const app = electron.remote.app;
 const path = require('path');
 const fs = require('fs');
 const {desktopCapturer} = require('electron');
+var utils = require('./utils');
 
 let videoExports = {initRecording: initRecording, toggleRecording: toggleRecording};
 module.exports = videoExports;
@@ -24,7 +25,7 @@ function toggleRecording(options) {
         if(options.timeout > 0) {
             timerControlVar = setTimeout(() => {
                 stopRecording();
-                console.debug('Timer ended');
+                utils.debug('Timer ended');
             }, options.timeout);
         }
     }
@@ -36,7 +37,7 @@ var mediaRecorder;
 
 async function initRecording() {
     var title = document.title;
-    console.debug('Initiated recording stream for title: "' + title + '"');
+    utils.debug('Initiated recording stream for title: "' + title + '"');
     var sources = await desktopCapturer.getSources({types: ['window', 'screen']});
     sources.forEach(async (src) => {
         if (src.name == title) {
@@ -50,7 +51,7 @@ async function initRecording() {
                         minHeight: 720*12
                     }
                 }
-            }, handleStream, (err) => {console.log(err);});
+            }, handleStream, (err) => {utils.log(err);});
         }
     });
 }
@@ -59,10 +60,10 @@ let continuePingingBlobs = false;
 async function startRecording() {
     blobs = [];
     mediaRecorder.start();
-    console.log('Started recording');
+    utils.log('Started recording');
     continuePingingBlobs = true;
     pingDom();
-    console.debug('Started pinging dom');
+    utils.debug('Started pinging dom');
 }
 
 /*
@@ -80,7 +81,7 @@ async function pingDom() {
         dummyElem.innerHTML = '.';
         setTimeout(pingDom, pingDomFrequency);
     } else {
-        console.debug('Stopped pinging dom');
+        utils.debug('Stopped pinging dom');
     }
 }
 
@@ -88,9 +89,9 @@ async function stopRecording() {
     continuePingingBlobs = false;
     mediaRecorder.requestData();
     mediaRecorder.stop();
-    console.log('Stopped recording');
+    utils.log('Stopped recording');
     setTimeout(()=> {
-        console.debug('Total size from dataavailable events is: ' + (totalSize / 1000) + 'kb');
+        utils.debug('Total size from dataavailable events is: ' + (totalSize / 1000) + 'kb');
         totalSize = 0;
         saveVideo();
     }, 1000); //Timeout to wait for last blob to be captured. Can be improved
@@ -104,7 +105,7 @@ async function handleStream(stream) {
     mediaRecorder.ondataavailable = e => {
         totalSize += e.data.size;
         if (e.data && e.data.size > 0) {
-            console.debug('dataavailable event triggered with blob size ' + e.data.size/1000 + 'kb');
+            utils.debug('dataavailable event triggered with blob size ' + e.data.size/1000 + 'kb');
             blobs.push(e.data);
         }
     };
@@ -122,5 +123,5 @@ async function saveVideo() {
     var vidPath = path.join(imgDir, new Date().getTime() + '.webm');
 
     fs.writeFileSync(vidPath, buffer);
-    console.log('Video of size ' + buffer.length/1000 + 'kb saved as ' + vidPath);
+    utils.log('Video of size ' + buffer.length/1000 + 'kb saved as ' + vidPath);
 }

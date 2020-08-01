@@ -4,6 +4,7 @@ const {desktopCapturer} = require('electron');
 const app = electron.remote.app;
 const path = require('path');
 var fs = require('fs');
+var utils = require('./utils');
 
 let imageExports = {captureScreenshot: captureScreenshot, toggleTimelapse: toggleTimelapse};
 module.exports = imageExports;
@@ -20,11 +21,11 @@ function toggleTimelapse(options) {
     if(!isTimelapseActive && timerControlVar == null) {
         isTimelapseActive = true;
         startTimelapse(options);
-        console.log('Started timelapse, area to be captured: ' + captureFullWindowText[options.captureFullWindow]);
+        utils.log('Started timelapse, area to be captured: ' + captureFullWindowText[options.captureFullWindow]);
         //Set timer if present
         if(options.timeout > 0) {
             timerControlVar = setTimeout(() => {
-                console.debug('Timelapse Timer expired');
+                utils.debug('Timelapse Timer expired');
                 stopTimelapse();
             }, options.timeout);
         }
@@ -51,12 +52,12 @@ function stopTimelapse() {
 function captureScreenshot(options) {
     if(options.captureFullWindow) {
         if (options.mode != 'timelapse') {
-            console.debug('Capturing full screen');
+            utils.debug('Capturing full screen');
         }
         captureWindow(options);
     } else {
         if (options.mode != 'timelapse') {
-            console.debug('Capturing visible');
+            utils.debug('Capturing visible area');
         }
         captureVisibleArea(options);
     }
@@ -73,7 +74,7 @@ function captureScreenshot(options) {
  */
 function startTimelapse(options) {
     if(!isTimelapseActive) {
-        console.log('Stopped timelapse; total images captured: ' + timelapseImageCount + ', directory: ' + imgDir);
+        utils.log('Stopped timelapse; total images captured: ' + timelapseImageCount + ', directory: ' + imgDir);
         //When quitting, clear previous cache and count
         timelapseImageCache = '';
         timelapseImageCount = 0;
@@ -111,7 +112,7 @@ async function captureWindow(options) {
             }, (stream) => {
                 handleStreamForScreenshot(stream, options);
             }, (err) => {
-                console.log(err);
+                utils.log(err);
             });
         }
     });
@@ -150,7 +151,7 @@ async function handleStreamForScreenshot(stream, options) {
             if(shouldTimelapseImageBeSaved(imageBuffer)) {
                 saveScreenshot(imageBuffer, options);
             } else {
-                console.debug('Same as previous image, not saving');
+                utils.debug('Same as previous image, not saving');
             }
         } else {
             saveScreenshot(imageBuffer, options);
@@ -163,7 +164,7 @@ async function handleStreamForScreenshot(stream, options) {
             // Destroy connect to stream
             stream.getTracks()[0].stop();
         } catch (e) {
-            console.log('No stream to stop');
+            utils.log('No stream to stop');
         }
     };
 }
@@ -208,7 +209,7 @@ function shouldTimelapseImageBeSaved(image) {
 
 //A very crude compare; just compare length of the images
 function isImageSame(image1, image2) {
-    //console.debug('Previous image vs current image: ' + image1.length + ' and ' + image2.length + '. Is same = ' + (image1.length == image2.length));
+    //utils.debug('Previous image vs current image: ' + image1.length + ' and ' + image2.length + '. Is same = ' + (image1.length == image2.length));
     return (image1.length == image2.length);
 }
 
@@ -227,9 +228,9 @@ function saveScreenshot(imgData, options) {
 
     fs.writeFileSync(imgPath, imgData, 'base64');
     if (options.mode == 'timelapse') {
-        console.info('#' + (timelapseImageCount + 1) + ' Saved image ' + imgName);
+        utils.log('#' + (timelapseImageCount + 1) + ' Saved image ' + imgName);
     } else {
-        console.log('Saved image to ' + imgPath);
+        utils.log('Saved image to ' + imgPath);
     }
 
     if(options.mode == 'timelapse') {
@@ -246,12 +247,12 @@ function saveScreenshot(imgData, options) {
 async function captureVisibleArea(options) {
     let win = BrowserWindow.getFocusedWindow();
     if(win == null) {
-        console.debug('No focussed window');
+        utils.debug('No focussed window');
         return;
     }
     var img = await win.webContents.capturePage()
         .catch(err => {
-            console.log(err);
+            utils.log(err);
         });
 
     options.fileNamePrefix = 'visible';
@@ -261,7 +262,7 @@ async function captureVisibleArea(options) {
         if(shouldTimelapseImageBeSaved(imgArray)) {
             saveScreenshot(imgArray, options);
         } else {
-            console.debug('Same as previous image, not saving');
+            utils.debug('Same as previous image, not saving');
         }
     } else {
         saveScreenshot(imgArray, options);
