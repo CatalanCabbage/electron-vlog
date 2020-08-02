@@ -82,4 +82,4 @@ Use the shortcut `Crtl+Shift+M` to capture a screenshot
     * Callback on image save
     
 ##### Footnotes:  
-<b id="f1">1</b> Footnote content here. [↩](#a1)
+<b id="f1">1</b> `Swear by mine beard`, paraphrased from the Bard - Shakespeare's *As you like it*, [Act I Scene II](https://www.opensourceshakespeare.org/views/plays/play_view.php?WorkID=asyoulikeit&Act=1&Scene=2&Scope=scene&LineHighlight=204#204). [↩](#a1)
