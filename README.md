@@ -9,14 +9,17 @@
 
 <p align="center">
  <b>The zero-effort way to take video recordings, screenshots and timelapse images of your Electron app. </b> <br>
- Requires just two words of code: <br>
- <code>require('electron-vlog')</code> <br>
- That's it. <br>
- Swear by mine beard.<sup id="a1"><a href="README.md#footnotes">*</sup>
+ Requires just two words of code: <code>require('electron-vlog')</code> <br>
+ That's it. Swear by mine beard.<sup id="a1"><a href="README.md#footnotes">*</sup>
 </p>
 
-### ToC
-### What is it? Context.
+### What does this do?
+*(spoiler alert)* Visually Logs your work!
+* **Take videos** of your Electron app - want to put together a quick demo? Or make it easier for users to share videos of your app?
+* **Take perfect screenshots** of your app window natively without having to edit and snip and crop   
+* **Make a time-lapse** to visually document your app's journey from start to finish. See how your UI evolved from a plain window to a glorious app!  
+(*How does this work?* Automatically take screenshots of your app at regular intervals; you can stitch them all together in the end to get a video, which makes for a great journey story to look back on your hard work!)
+
 ### Examples
 ### How do you use it?
 ### Options
