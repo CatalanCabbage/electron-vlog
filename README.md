@@ -7,21 +7,60 @@
  <a href="https://github.com/CatalanCabbage/electron-vlog"><img alt="GitHub license" src="https://img.shields.io/github/license/CatalanCabbage/electron-vlog?color=55b4ce"></a>
 </p>
 
+-----
+
 <p align="center">
  <b>The zero-effort way to take video recordings, screenshots and timelapse images of your Electron app. </b> <br>
  Requires just two words of code: <code>require('electron-vlog')</code> <br>
  That's it. Swear by mine beard.<sup id="a1"><a href="README.md#footnotes">*</sup>
 </p>
 
-### What is Electron vLog?
+-----
+
+## What is Electron vLog?
 A light-weight, zero-dependency package that *(spoiler alert)* visually logs your work!
 * **Take videos** of your Electron app - want to put together a quick demo? Or make it easier for users to share videos of your app?
 * **Take perfect screenshots** of your app window natively without having to edit and snip and crop   
 * **Make a time-lapse** to visually document your app's journey from start to finish. See how your UI evolved from a plain window to a glorious app!  
 (*How does this work?* Automatically take screenshots of your app at regular intervals; you can stitch them all together in the end to get a video, which makes for a great journey story to look back on your hard work!)
 
-### Examples
-### How do you use it?
+## Examples
+
+## Installing the package:
+```shell script
+npm install --save electron-vlog
+```
+or if you want to use this package only during development:
+```shell script
+npm install --save-dev electron-vlog
+```
+
+## Usage:
+`require` the `electron-vlog` module in *any* Javascript file that has been included in the HTML page you want to record.
+
+For example, if `index.js` is included in the `index.html` that you want to capture/record, like this:
+```html
+...
+<script src="./index.js"></script>
+...
+```
+then add this line to your `index.js` file:
+````javascript
+require('electron-vlog');
+````  
+
+*That's all the code you need!*  
+<br>
+#### Capturing a screenshot:  
+Use the shortcut `Crtl+Shift+M` to capture a screenshot  
+
+**Timelapse**:  
+`Crtl+Shift+B` to start taking timelapse screenshots, `Crtl+Shift+B` again to stop
+
+**Record screen**:  
+`Crtl+Shift+N` to start recording screen, `Crtl+Shift+N` again to stop
+
+
 ### Options
 
 
@@ -55,27 +94,6 @@ Content
 - [ ] Write tests!
 
 
-### Installing the package:
-```shell script
-npm install --save electron-vlog
-```
-
-### Usage:
-`require` the `electron-vlog` module in any HTML page
-````javascript
-const vlog = require('electron-vlog');
-````  
-
-*That's all the code you need! Now use keyboard shortcuts to perform actions:*  
-<br>
-**Screenshot**:  
-Use the shortcut `Crtl+Shift+M` to capture a screenshot  
-
-**Timelapse**:  
-`Crtl+Shift+B` to start taking timelapse screenshots, `Crtl+Shift+B` again to stop
-
-**Record screen**:  
-`Crtl+Shift+N` to start recording screen, `Crtl+Shift+N` again to stop
 
 -----
 
