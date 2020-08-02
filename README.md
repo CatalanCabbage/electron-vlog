@@ -1,17 +1,16 @@
 <p align="center">
- <img alt="Electron vLog" src="assets/vlogLogo.png" height="170"></img>
+ <img alt="Electron vLog" src="assets/vlogLogo.png" height="150"></img>
 </p>
 
 <p align="center">
  <a href="https://github.com/CatalanCabbage/electron-vlog-experiments"><img alt="Tests repo" src="https://img.shields.io/badge/tests_repo-electron--vlog--experiments-9b94ff"></a>
- <a href="package.json"><img alt="Project dependencies" src="https://img.shields.io/badge/dependencies-none-brightgreen"></a>
  <a href="https://github.com/CatalanCabbage/electron-vlog"><img alt="GitHub license" src="https://img.shields.io/github/license/CatalanCabbage/electron-vlog?color=55b4ce"></a>
 </p>
 
 <p align="center">
 <i>The</i> zero-effort way to take video recordings, screenshots and timelapse images of your Electron app. <br>
 Two words of code: <code>require('electron-vlog')</code> <br>
-Swear by mine beard.
+Swear by mine beard<sup id="a1">[1](#f1)</sup>.
 </p>
 
 ### ToC
@@ -82,3 +81,5 @@ Use the shortcut `Crtl+Shift+M` to capture a screenshot
     * Media naming format
     * Callback on image save
     
+##### Footnotes:  
+<b id="f1">1</b> Footnote content here. [↩](#a1)
