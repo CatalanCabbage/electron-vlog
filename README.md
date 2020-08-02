@@ -1,5 +1,8 @@
-[badges]
-# electron-vlog [logo]
+[badges]  
+<p align="center">
+ <img alt="Electron vLog" src="assets/vlogLogo.png" height="170"></img>
+</p>
+
 [tiny gist]
 ### ToC
 ### What is it? Context.
