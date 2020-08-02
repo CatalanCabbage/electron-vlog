@@ -1,7 +1,15 @@
-[badges]  
 <p align="center">
  <img alt="Electron vLog" src="assets/vlogLogo.png" height="170"></img>
 </p>
+
+<p align="center">
+ <a href="https://github.com/CatalanCabbage/electron-vlog-experiments"><img alt="Tests repo" src="https://img.shields.io/badge/tests_repo-electron--vlog--experiments-9b94ff"></a>
+ <a href="package.json"><img alt="Project dependencies" src="https://img.shields.io/badge/dependencies-none-brightgreen"></a>
+ <a href="https://github.com/CatalanCabbage/electron-vlog/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/CatalanCabbage/electron-vlog?color=00b69d"></a>
+ <a href="https://github.com/CatalanCabbage/electron-vlog"><img alt="GitHub license" src="https://img.shields.io/github/license/CatalanCabbage/electron-vlog?color=blue"></a>
+</p>
+
+
 
 [tiny gist]
 ### ToC
