@@ -8,9 +8,9 @@
 </p>
 
 <p align="center">
-<i>The</i> zero-effort way to take video recordings, screenshots and timelapse images of your Electron app. <br>
-Two words of code: <code>require('electron-vlog')</code> <br>
-Swear by mine beard.<sup id="a1"><a href="README.md#footnotes">*</sup>
+ <b>The zero-effort way to take video recordings, screenshots and timelapse images of your Electron app. </b> <br>
+ Requires just two words of code: <code>require('electron-vlog')</code> <br>
+ That's it. Swear by mine beard.<sup id="a1"><a href="README.md#footnotes">*</sup>
 </p>
 
 ### ToC
