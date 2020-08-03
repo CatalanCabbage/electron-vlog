@@ -52,19 +52,18 @@ require('electron-vlog');
 *That's all the code you need!*  
 
 ## Usage:
-You can now use **keyboard shortcuts** to perform actions.
-#### `Crtl+Shift+M` Captures a screenshot 
+You can now use **keyboard shortcuts** to perform actions.  
+*(Note: You can customize behavior, as detailed in the options section.)*
+### `Crtl+Shift+M` Captures a screenshot 
 Captures an image of the window in focus while pressing the shortcut.
 
-#### `Crtl+Shift+B` - Toggles Timelapse 
+### `Crtl+Shift+B` - Toggles Timelapse 
 First press starts timelapse, second press stops timelapse.  
 Takes a screenshot every few seconds - only if there's a change in appearance.  
 That is, the screenshot is saved only if it differs from the previous screenshot, so that you don't end up with the same images! 
 
-#### `Crtl+Shift+N` - Toggles Screen Recording  
+### `Crtl+Shift+N` - Toggles Screen Recording  
 First press starts recording, second press stops recording.
-
-> You can customize behavior, as detailed in the options section
 
 ## Programmatic usage(API):
 Basic API's have been exposed to perform these actions with code. 
