@@ -64,7 +64,7 @@ That is, the screenshot is saved only if it differs from the previous screenshot
 #### `Crtl+Shift+N` - Toggles Screen Recording  
 First press starts recording, second press stops recording.
 
-> You can customize behavior, as detailed in the [options](#options) section
+> You can customize behavior, as detailed in the options section
 
 ## Programmatic usage(API):
 Basic API's have been exposed to perform these actions with code. 
