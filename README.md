@@ -22,7 +22,7 @@ A light-weight, zero-dependency package that *(spoiler alert)* visually logs you
 * **Take videos** of your Electron app - want to put together a quick demo? Or make it easier for users to share videos of your app?
 * **Take perfect screenshots** of your app window natively without having to edit and snip and crop   
 * **Make a time-lapse** to visually document your app's journey from start to finish. See how your UI evolved from a plain window to a glorious app!  
-(*How does this work?* Automatically take screenshots of your app at regular intervals; you can stitch them all together in the end to get a video, which makes for a great journey story to look back on your hard work!)
+(*How does this work?* Automatically take screenshots of your app at regular intervals; you can stitch them all together in the end to get a great video of your app's journey!)
 
 ## Examples
 
@@ -61,9 +61,14 @@ First press starts timelapse, second press stops timelapse.
 Takes a screenshot every few seconds - only if there's a change in appearance.  
 That is, the screenshot is saved only if it differs from the previous screenshot, so that you don't end up with the same images! 
 
-#### Record screen:  `Crtl+Shift+N`
+#### `Crtl+Shift+N` - Toggles Screen Recording  
 First press starts recording, second press stops recording.
 
+> You can customize behavior, as detailed in the [options](#options) section
+
+## Programmatic usage(API):
+Basic API's have been exposed to perform these actions with code. 
+####
 
 ### Options
 
