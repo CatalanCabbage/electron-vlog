@@ -34,8 +34,8 @@ or if you want to use this package only during development:
 ```shell script
 npm install --save-dev electron-vlog
 ```
+## Code setup:
 
-## Usage:
 `require` the `electron-vlog` module in *any* Javascript file that has been included in the HTML page you want to record.
 
 For example, if `index.js` is included in the `index.html` that you want to capture/record, like this:
@@ -44,21 +44,25 @@ For example, if `index.js` is included in the `index.html` that you want to capt
 <script src="./index.js"></script>
 ...
 ```
-then add this line to your `index.js` file:
+then add this one line to your `index.js` file:
 ````javascript
 require('electron-vlog');
 ````  
 
 *That's all the code you need!*  
-<br>
-#### Capturing a screenshot:  
-Use the shortcut `Crtl+Shift+M` to capture a screenshot  
 
-**Timelapse**:  
-`Crtl+Shift+B` to start taking timelapse screenshots, `Crtl+Shift+B` again to stop
+## Usage:
+You can now use **keyboard shortcuts** to perform actions.
+#### `Crtl+Shift+M` Captures a screenshot 
+Captures an image of the window in focus while pressing the shortcut.
 
-**Record screen**:  
-`Crtl+Shift+N` to start recording screen, `Crtl+Shift+N` again to stop
+#### `Crtl+Shift+B` - Toggles Timelapse 
+First press starts timelapse, second press stops timelapse.  
+Takes a screenshot every few seconds - only if there's a change in appearance.  
+That is, the screenshot is saved only if it differs from the previous screenshot, so that you don't end up with the same images! 
+
+#### Record screen:  `Crtl+Shift+N`
+First press starts recording, second press stops recording.
 
 
 ### Options
