@@ -9,8 +9,6 @@ var utils = require('./utils');
 let imageExports = {captureScreenshot: captureScreenshot, toggleTimelapse: toggleTimelapse};
 module.exports = imageExports;
 
-var imgBaseDir = path.join(app.getPath('pictures'), 'electron-vlog', 'screenshots');
-
 var isTimelapseActive = false;
 let timerControlVar;
 let captureFullWindowText = {
@@ -45,7 +43,7 @@ function stopTimelapse() {
 /**
  * @param {Object} options
  * @param {Boolean} [options.captureFullWindow]
- * @param {String} [options.childDirectory]
+ * @param {String} [options.directory]
  * @param {String} [options.fileNamePrefix]
  * @param {'timelapse'|'screenshot'} [options.mode]
  */
@@ -67,7 +65,7 @@ function captureScreenshot(options) {
 /**
  * @param {Object} options
  * @param {Boolean} [options.captureFullWindow]
- * @param {String} [options.childDirectory]
+ * @param {String} [options.directory]
  * @param {String} [options.fileNamePrefix]
  * @param {Number} [options.timelapseInterval]
  * @param {'timelapse'|'screenshot'} [options.mode]
@@ -89,7 +87,7 @@ function startTimelapse(options) {
 
 /**
  * @param {Object} options
- * @param {String} [options.childDirectory]
+ * @param {String} [options.directory]
  * @param {String} [options.fileNamePrefix]
  * @param {'timelapse'|'screenshot'} [options.mode]
  */
@@ -169,26 +167,28 @@ async function handleStreamForScreenshot(stream, options) {
     };
 }
 
-let imgDir;
 /**
  * Create directory if not present and return complete path
  * @param {Object} options
- * @param {String} options.childDirectory
+ * @param {String} options.directory
  * @param {String} options.fileNamePrefix
  * @return {string} complete path
  */
-function getImgPath(options) {
-    let childDirectory = options.childDirectory;
+function getImgPathProps(options) {
+    let directory = options.directory;
     let fileNamePrefix = options.fileNamePrefix;
 
-    imgDir = path.join(imgBaseDir, childDirectory);
     //Create Directory
-    if (!fs.existsSync(imgDir)) {
-        fs.mkdirSync(imgDir, {recursive: true});
+    if (!fs.existsSync(directory)) {
+        fs.mkdirSync(directory, {recursive: true});
     }
+    //Generate name with date to make it unique. Do millis %10 to make it readable(with the accepted risk of collision)
+    let d = new Date();
+    let dateTime = d.getDate() + '-' + (d.getMonth() + 1) + '_' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ':' + (d.getMilliseconds()%10);
+
     //Generate complete path
-    let imgName = fileNamePrefix + '-' + new Date().getTime() + '.png';
-    var imgPath = path.join(imgDir, imgName);
+    let imgName = fileNamePrefix + '_' + dateTime + '.png';
+    var imgPath = path.join(directory, imgName);
     return {imgPath: imgPath, imgName: imgName};
 }
 
@@ -217,12 +217,12 @@ let timelapseImageCount = 0;
 /**
  * @param imgData
  * @param {Object} options
- * @param {String} [options.childDirectory]
+ * @param {String} [options.directory]
  * @param {String} [options.fileNamePrefix]
  * @param {'timelapse'|'screenshot'} [options.mode]
  * */
 function saveScreenshot(imgData, options) {
-    let imgProps = getImgPath(options);
+    let imgProps = getImgPathProps(options);
     let imgPath = imgProps.imgPath;
     let imgName = imgProps.imgName;
 
@@ -240,7 +240,7 @@ function saveScreenshot(imgData, options) {
 
 /**
  * @param {Object} options
- * @param {String} [options.childDirectory]
+ * @param {String} [options.directory]
  * @param {String} [options.fileNamePrefix]
  * @param {'timelapse'|'screenshot'} [options.mode]
  */

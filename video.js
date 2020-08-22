@@ -11,6 +11,8 @@ let videoExports = {initRecording: initRecording, toggleRecording: toggleRecordi
 module.exports = videoExports;
 
 let timerControlVar;
+let directory;
+let fileNamePrefix;
 function toggleRecording(options) {
     //If timer is active or recording is active, clear and stop recording
     if (timerControlVar != null) {
@@ -20,7 +22,7 @@ function toggleRecording(options) {
     } else if ((mediaRecorder != null && mediaRecorder.state == 'recording')) {
         stopRecording();
     } else {
-        startRecording();
+        startRecording(options);
         //After starting, automatically stop recording after options.timeout ms
         if(options.timeout > 0) {
             timerControlVar = setTimeout(() => {
@@ -57,13 +59,15 @@ async function initRecording() {
 }
 let continuePingingBlobs = false;
 
-async function startRecording() {
+async function startRecording(options) {
     blobs = [];
     mediaRecorder.start();
     utils.log('Started recording');
     continuePingingBlobs = true;
     pingDom();
     utils.debug('Started pinging dom');
+    directory = options.directory;
+    fileNamePrefix = options.fileNamePrefix;
 }
 
 /*
@@ -111,16 +115,19 @@ async function handleStream(stream) {
     };
 }
 
-var imgDir = path.join(app.getPath('pictures'), 'electron-vlog', 'screenshots');
-if (!fs.existsSync(imgDir)) {
-    fs.mkdirSync(imgDir, {recursive: true});
-}
-
+// noinspection DuplicatedCode
 async function saveVideo() {
     var blob = new Blob(blobs, {type: videoMimeType});
     var buffer = Buffer.from(await blob.arrayBuffer());
 
-    var vidPath = path.join(imgDir, new Date().getTime() + '.webm');
+    if (!fs.existsSync(directory)) {
+        fs.mkdirSync(directory, {recursive: true});
+    }
+    let d = new Date();
+    let dateTime = d.getDate() + '-' + (d.getMonth() + 1) + '_' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+
+    let vidName = fileNamePrefix + '_' + dateTime + '.webm';
+    var vidPath = path.join(directory, vidName);
 
     fs.writeFileSync(vidPath, buffer);
     utils.log('Video of size ' + buffer.length/1000 + 'kb saved as ' + vidPath);
