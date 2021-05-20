@@ -1,3 +1,5 @@
+> _WIP: Not release ready. Tested to work, but options have not been added yet._
+
 <p align="center">
  <img alt="Electron vLog" src="assets/vlogLogo.png" height="150"></img>
 </p>
@@ -67,43 +69,39 @@ First press starts recording, second press stops recording.
 
 ## Programmatic usage(API):
 Basic API's have been exposed to perform these actions with code. 
-####
 
 ### Options
-
+_To be added_
 
 -----
-Content
+
+-----
+**Rough draft**
 # [WIP]electron-vlog
- Take video recordings, screenshots and time-lapses of your Electron app with ease
 
 ### Objectives:
 - [ ] Port as npm package
-- [ ] Must work for multiple windows, with simple instructions
+- [x] Must work for multiple windows, with simple instructions
 - Zero-effort
-    - [ ] Video recording
-    - [ ] Screenshots
-    - [ ] Timelapses
+    - [x] Video recording
+    - [x] Screenshots
+    - [x] Timelapses
 - Comprehensive options
-    - [ ] Path to save media
+    - [x] Path to save media
     - [ ] Media naming format
-    - [ ] Debug option
+    - [x] Debug option
     - [ ] Callback on image save - even prevent save
     - Timelapse
-        - [ ] Time interval between screenshots 
+        - [x] Time interval between screenshots 
     - Screenshots
-        - [ ] Window vs visible area
-- [ ] Self-explanatory debug logging option
+        - [x] Window vs visible area
+- [x] Self-explanatory debug logging option
 - [ ] Have tests for all cases
 
 ### To-do:
 - [x] Create a separate repo for testing *-[electron-vlog-experiments](https://github.com/CatalanCabbage/electron-vlog-experiments)*
 - [x] Simulate npm package locally
-- [ ] Write tests!
-
-
-
------
+- [ ] Write tests
 
 ### Upcoming changes:  
 * Add automated testing
@@ -112,5 +110,6 @@ Content
     * Media naming format
     * Callback on image save
     
+-----
 ##### Footnotes:  
 <b id="f1">1</b> `Swear by mine beard`, paraphrased from the Bard - Shakespeare's *As you like it*, [Act I Scene II](https://www.opensourceshakespeare.org/views/plays/play_view.php?WorkID=asyoulikeit&Act=1&Scene=2&Scope=scene&LineHighlight=204#204). [↩](#a1)
